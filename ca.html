@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Full Screen Image Display</title>
+<title>Full Screen Image Slider</title>
 <style>
     body, html {
         margin: 0;
@@ -11,21 +11,89 @@
         height: 100%;
         overflow: hidden;
     }
-    .fullscreen-img {
+    .slider-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .slider {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        transition: transform 0.5s ease;
+    }
+    .slide {
+        flex: 0 0 100%;
+        height: 100%;
+        overflow: hidden;
+        position: relative;
+    }
+    .slide img {
         width: 100%;
         height: 100%;
         object-fit: contain;
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: -1;
     }
 </style>
 </head>
 <body>
-    <img class="fullscreen-img" src="img/2.jpg" alt="Image 2">
-    <img class="fullscreen-img" src="img/3.jpg" alt="Image 3">
-    <img class="fullscreen-img" src="img/4.jpg" alt="Image 4">
-    <img class="fullscreen-img" src="img/5up.jpg" alt="Image 5up">
+    <div class="slider-container">
+        <div class="slider">
+            <div class="slide">
+                <img src="img/2.jpg" alt="Image 2">
+            </div>
+            <div class="slide">
+                <img src="img/3.jpg" alt="Image 3">
+            </div>
+            <div class="slide">
+                <img src="img/4.jpg" alt="Image 4">
+            </div>
+            <div class="slide">
+                <img src="img/5up.jpg" alt="Image 5up">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const slider = document.querySelector('.slider');
+        let isDragging = false;
+        let startPosition = 0;
+        let currentTranslate = 0;
+        let prevTranslate = 0;
+
+        slider.addEventListener('mousedown', (event) => {
+            isDragging = true;
+            startPosition = event.clientY - slider.offsetTop;
+            prevTranslate = currentTranslate;
+            slider.style.transition = 'none';
+        });
+
+        slider.addEventListener('mousemove', (event) => {
+            if (isDragging) {
+                const currentPosition = event.clientY - slider.offsetTop;
+                currentTranslate = prevTranslate + currentPosition - startPosition;
+                slider.style.transform = `translateY(${currentTranslate}px)`;
+            }
+        });
+
+        slider.addEventListener('mouseup', () => {
+            isDragging = false;
+            const slideHeight = slider.offsetHeight;
+            if (currentTranslate > slideHeight / 3) {
+                currentTranslate += slideHeight / 2;
+            } else if (currentTranslate < -slideHeight / 3) {
+                currentTranslate -= slideHeight / 2;
+            }
+            slider.style.transition = 'transform 0.5s ease';
+            slider.style.transform = `translateY(${currentTranslate}px)`;
+        });
+
+        slider.addEventListener('mouseleave', () => {
+            isDragging = false;
+            slider.style.transition = 'transform 0.5s ease';
+            slider.style.transform = `translateY(${currentTranslate}px)`;
+        });
+    </script>
 </body>
 </html>
